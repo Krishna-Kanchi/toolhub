@@ -24,6 +24,127 @@ const CATEGORIES = [
   { slug: 'utility-tools', name: 'Utility Tools', icon: '⚙️' }
 ];
 
+// --- Sub-Components ---
+
+function Home() {
+  return (
+    <div>
+      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+        <h1 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '16px', color: '#f8fafc' }}>
+          All-in-One <span style={{ color: '#d4af37' }}>ToolHub</span>
+        </h1>
+        <p style={{ color: '#94a3b8', fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+          Your ultimate destination for lightning-fast file conversions, image editing, PDF tools, and developer utilities.
+        </p>
+      </div>
+
+      <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: '#f8fafc' }}>Explore Categories</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px', marginBottom: '60px' }}>
+        {CATEGORIES.map(cat => (
+          <Link key={cat.slug} to={`/category/${cat.slug}`} style={{ background: '#171e2b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', textDecoration: 'none', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '16px', transition: '0.2s border-color' }}>
+            <span style={{ fontSize: '32px' }}>{cat.icon}</span>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '4px' }}>{cat.name}</h3>
+              <span style={{ fontSize: '13px', color: '#94a3b8' }}>View tools →</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: '#f8fafc' }}>Featured Tools</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+        {TOOLS_DATABASE.filter(t => t.isFeatured).map(tool => (
+          <Link key={tool.id} to={`/tool/${tool.id}`} style={{ background: '#171e2b', border: '1px solid rgba(212, 175, 55, 0.15)', borderRadius: '16px', padding: '24px', textDecoration: 'none', color: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#d4af37' }}>{tool.title}</h3>
+              <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' }}>{tool.description}</p>
+            </div>
+            <span style={{ marginTop: '20px', fontSize: '14px', fontWeight: '600', color: '#d4af37' }}>Launch Tool →</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AllTools() {
+  return (
+    <div>
+      <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '24px', color: '#f8fafc' }}>All Available Tools</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+        {TOOLS_DATABASE.map(tool => (
+          <Link key={tool.id} to={`/tool/${tool.id}`} style={{ background: '#171e2b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', textDecoration: 'none', color: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#f8fafc' }}>{tool.title}</h3>
+              <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' }}>{tool.description}</p>
+            </div>
+            <span style={{ marginTop: '20px', fontSize: '14px', fontWeight: '600', color: '#d4af37' }}>Open Tool →</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CategoryPage() {
+  const { categorySlug } = useParams();
+  const category = CATEGORIES.find(c => c.slug === categorySlug);
+  const tools = TOOLS_DATABASE.filter(t => t.category === categorySlug);
+
+  return (
+    <div>
+      <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '8px', color: '#f8fafc' }}>
+        {category ? `${category.icon} ${category.name}` : 'Category'}
+      </h1>
+      <p style={{ color: '#94a3b8', marginBottom: '32px' }}>Browse utilities available under this category.</p>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+        {tools.length > 0 ? tools.map(tool => (
+          <Link key={tool.id} to={`/tool/${tool.id}`} style={{ background: '#171e2b', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', textDecoration: 'none', color: '#f8fafc' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#f8fafc' }}>{tool.title}</h3>
+            <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' }}>{tool.description}</p>
+          </Link>
+        )) : <p style={{ color: '#94a3b8' }}>No tools found in this category.</p>}
+      </div>
+    </div>
+  );
+}
+
+function ToolDetail() {
+  const { toolId } = useParams();
+  const tool = TOOLS_DATABASE.find(t => t.id === toolId);
+  const [actionDone, setActionDone] = useState(false);
+
+  if (!tool) return <h2 style={{ color: '#f8fafc' }}>Tool not found</h2>;
+
+  return (
+    <div style={{ maxWidth: '800px', margin: '0 auto', background: '#171e2b', border: '1px solid rgba(212, 175, 55, 0.2)', borderRadius: '20px', padding: '40px' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '12px', color: '#d4af37' }}>{tool.title}</h1>
+      <p style={{ color: '#94a3b8', fontSize: '16px', marginBottom: '30px' }}>{tool.description}</p>
+      
+      <div style={{ border: '2px dashed rgba(255,255,255,0.1)', borderRadius: '12px', padding: '40px', textAlign: 'center', background: '#0f141c', marginBottom: '24px' }}>
+        <p style={{ color: '#cbd5e1', marginBottom: '16px' }}>Drag and drop your files here or click to browse</p>
+        <button onClick={() => setActionDone(true)} style={{ padding: '12px 24px', background: 'linear-gradient(135deg, #d4af37 0%, #aa771c 100%)', color: '#0f141c', border: 'none', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
+          Process File
+        </button>
+        {actionDone && <p style={{ color: '#22c55e', marginTop: '16px', fontWeight: '600' }}>✓ File processed successfully simulation!</p>}
+      </div>
+    </div>
+  );
+}
+
+function InfoPage() {
+  const { pageSlug } = useParams();
+  return (
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: '800', marginBottom: '16px', color: '#f8fafc', textTransform: 'capitalize' }}>{pageSlug.replace('-', ' ')}</h1>
+      <p style={{ color: '#94a3b8', lineHeight: '1.6' }}>This is the dedicated information page for {pageSlug}. ToolHub provides reliable and secure web utilities for daily developer and personal tasks.</p>
+    </div>
+  );
+}
+
+// --- Main App Component ---
+
 export default function App() {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -39,7 +160,6 @@ export default function App() {
     e.preventDefault();
     if (!email || !password) return alert('Please enter email and password.');
     
-    // Set the current logged-in user session
     setCurrentUser(email);
     setIsSignInOpen(false);
     setEmail('');
@@ -137,4 +257,41 @@ export default function App() {
 
               <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', background: '#0f141c', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <button onClick={() => setAuthMode('signin')} style={{ flex: 1, padding: '10px', background: authMode === 'signin' ? '#d4af37' : 'transparent', color: authMode === 'signin' ? '#0f141c' : '#94a3b8', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Sign In</button>
-                <button onClick={() => setAuthMode('signup')} style={{ flex: 1, padding: '10px', background: authMode === 'signup' ? '#d4af37' : 'transparent', color: authMode === 'signup' ? '#0f141c' : '#94a3b8', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Sign
+                <button onClick={() => setAuthMode('signup')} style={{ flex: 1, padding: '10px', background: authMode === 'signup' ? '#d4af37' : 'transparent', color: authMode === 'signup' ? '#0f141c' : '#94a3b8', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Sign Up</button>
+              </div>
+
+              <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>Email Address</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@example.com" style={{ width: '100%', padding: '12px 16px', background: '#0f141c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#f8fafc', fontSize: '14px', outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' }}>Password</label>
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '12px 16px', background: '#0f141c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#f8fafc', fontSize: '14px', outline: 'none' }} />
+                </div>
+                <button type="submit" style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #d4af37 0%, #aa771c 100%)', color: '#0f141c', border: 'none', borderRadius: '10px', fontWeight: '700', fontSize: '15px', cursor: 'pointer', marginTop: '8px' }}>
+                  {authMode === 'signin' ? 'Sign In' : 'Create Account'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Share Platform Modal */}
+        {isShareModalOpen && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(10, 13, 19, 0.8)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
+            <div style={{ background: '#171e2b', border: '1px solid rgba(212, 175, 55, 0.3)', borderRadius: '20px', padding: '40px', width: '100%', maxWidth: '400px', textAlign: 'center', position: 'relative' }}>
+              <button onClick={() => setIsShareModalOpen(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '20px', cursor: 'pointer' }}>✕</button>
+              <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '12px', color: '#f8fafc' }}>Share ToolHub</h3>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '20px' }}>Spread the word about our multi-tool platform!</p>
+              <button onClick={handleGlobalShare} style={{ width: '100%', padding: '12px', background: '#d4af37', color: '#0f141c', border: 'none', borderRadius: '10px', fontWeight: '700', cursor: 'pointer' }}>
+                {copiedGlobal ? 'Copied Link to Clipboard! ✓' : 'Copy Platform URL 🔗'}
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </Router>
+  );
+}
